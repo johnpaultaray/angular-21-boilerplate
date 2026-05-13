@@ -1,123 +1,164 @@
 # Angular 21 Boilerplate
 
-A complete Angular 21 boilerplate application with authentication, admin dashboard, and user account management.
+A production-ready Angular 21 boilerplate with a complete authentication system, role-based access control, and a mock backend for development.
+
+Built with **Angular 21.2.10**, **Bootstrap 5.3.3**, and **LESS**.
+
+## Features
+
+- **Authentication & Account Management**
+  - User registration with email verification
+  - Login / Logout
+  - JWT token management (refresh & revoke)
+  - Forgot password / Reset password flow
+  - Persistent sessions via local storage
+
+- **Role-Based Access Control**
+  - Two roles: `User` and `Admin`
+  - Auth guard protects routes from unauthorized access
+  - Admin-only routes enforce role restrictions
+
+- **User Profile Management**
+  - View and update account details
+  - Change email and password
+
+- **Admin Panel**
+  - List, create, edit, and delete user accounts
+  - Role assignment
+
+- **Development Tools**
+  - Fake backend interceptor for offline development (no real API required)
+  - JWT interceptor (auto-attaches token to requests)
+  - Error interceptor (global HTTP error handling)
+  - Alert/notification system for user feedback
+
+- **Modern Angular Architecture**
+  - Standalone components with optional NgModules for lazy-loaded feature modules
+  - Reactive Forms for form handling
+  - HTTP interceptors for cross-cutting concerns
+  - Lazy-loaded routes for `Account`, `Profile`, and `Admin` modules
 
 ## Prerequisites
 
-Before running this project, make sure you have the following installed:
+- [Node.js](https://nodejs.org/) (v18.19.1 or later)
+- npm (included with Node.js)
+- Angular CLI (optional, install globally: `npm install -g @angular/cli`)
 
-- **Node.js** (v14.0.0 or higher) - [Download](https://nodejs.org/)
-- **npm** (v6.0.0 or higher) - Comes with Node.js
-- **Angular CLI** (v21.0.0 or higher)
-
-## Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/johnpaultaray/angular-21-boilerplate.git
-   cd angular-21-boilerplate
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Install Angular CLI globally** (if not already installed)
-   ```bash
-   npm install -g @angular/cli
-   ```
-
-## Running the Application
-
-### Development Server
-
-Start the development server with hot-reload:
+## Getting Started
 
 ```bash
-ng serve
-```
+# Clone the repository
+git clone https://github.com/johnpaultaray/angular-21-boilerplate.git
 
-or
+# Navigate into the project
+cd angular-21-boilerplate
 
-```bash
+# Install dependencies
+npm install
+
+# Start the development server
 npm start
 ```
 
-The application will be available at **http://localhost:4200**
+Navigate to `http://localhost:4200`. The app runs with a fake backend by default, so no external API is needed.
 
-### Production Build
+## Available Scripts
 
-Create an optimized production build:
-
-```bash
-ng build --prod
-```
-
-The build artifacts will be stored in the `dist/` directory.
-
-### Running Tests
-
-Execute unit tests via Karma:
-
-```bash
-ng test
-```
+| Command           | Description                                    |
+| ----------------- | ---------------------------------------------- |
+| `npm start`       | Start development server (`ng serve`)          |
+| `npm run build`   | Build for production (`ng build`)              |
+| `npm run watch`   | Build in watch mode (development configuration)|
+| `npm test`        | Run unit tests via Karma (`ng test`)           |
 
 ## Project Structure
 
 ```
-src/app/
-├── _components/          # Shared components (e.g., alert component)
-├── _helpers/             # Utility helpers (guards, interceptors, validators)
-├── _models/              # Data models (Account, Alert, Role)
-├── _services/            # Services (Account service, Alert service)
-├── account/              # Account module (login, register, password reset, etc.)
-├── admin/                # Admin module (account management)
-├── home/                 # Home module
-└── profile/              # Profile module
+src/
+├── app/
+│   ├── _components/        # Shared components (AlertComponent)
+│   ├── _helpers/           # Guards, interceptors, initializer, validators, fake backend
+│   │   ├── auth.guard.ts
+│   │   ├── app.initializer.ts
+│   │   ├── jwt.interceptor.ts
+│   │   ├── error.interceptor.ts
+│   │   ├── fake-backend.ts
+│   │   └── must-match.validator.ts
+│   ├── _models/            # Data models & enums (Account, Alert, Role)
+│   ├── _services/          # API services (AccountService, AlertService)
+│   ├── account/            # Account module (login, register, verify, password reset)
+│   ├── admin/              # Admin module (user management CRUD)
+│   ├── home/               # Home page
+│   ├── profile/            # Profile module
+│   ├── app-routing.module.ts
+│   ├── app.component.ts
+│   ├── app.component.html
+│   ├── app.config.ts
+│   └── app.module.ts       # (Legacy NgModule wrapper, standalone is primary entry)
+├── environments/           # Environment configuration
+├── index.html
+├── main.ts                 # App bootstrap (standalone)
+├── styles.less             # Global styles
 ```
 
-## Key Features
+### Key Architecture Decisions
 
-- ✅ User Authentication & Authorization
-- ✅ JWT Token Management
-- ✅ Role-based Access Control
-- ✅ Admin Dashboard
-- ✅ Account Management
-- ✅ Error Handling & Interceptors
-- ✅ Form Validation
-- ✅ Alert/Notification System
+- **Standalone-first**: The app bootstraps via `bootstrapApplication` in `main.ts` with `appConfig` providers.
+- **Hybrid module support**: Feature modules (`AccountModule`, `AdminModule`, `ProfileModule`) are lazy-loaded via the traditional NgModule approach for organizational clarity.
+- **Fake backend**: In development mode (`environment.production = false`), the `FakeBackendInterceptor` intercepts all HTTP requests and simulates API responses. The first registered user automatically becomes an Admin.
+- **Two entry points**: `app.module.ts` is available but the primary bootstrap is standalone via `main.ts` → `AppComponent`.
 
-## Configuration Files
+## Routes
 
-- `angular.json` - Angular CLI configuration
-- `tsconfig.json` - TypeScript compiler options
-- `package.json` - Project dependencies and scripts
-- `styles.less` - Global styles
+| Path              | Component / Module       | Auth Required | Role Required |
+| ----------------- | ------------------------ | :-----------: | :-----------: |
+| `/`               | HomeComponent            | Yes           | —             |
+| `/account/login`  | AccountModule (lazy)     | No            | —             |
+| `/account/register`| AccountModule (lazy)    | No            | —             |
+| `/profile`        | ProfileModule (lazy)     | Yes           | —             |
+| `/admin`          | AdminModule (lazy)       | Yes           | Admin         |
 
-## Troubleshooting
+## Tech Stack
 
-### Port Already in Use
-If port 4200 is already in use, specify a different port:
+| Technology       | Version       |
+| ---------------- | ------------- |
+| Angular          | 21.2.10       |
+| Angular CLI      | 21.2.10       |
+| TypeScript       | ~5.9.2        |
+| Bootstrap        | 5.3.3         |
+| RxJS             | 7.8.2         |
+| Zone.js          | 0.15.0        |
+| Less             | (via Angular) |
+
+## Testing
+
+Run unit tests with Karma and Jasmine:
+
 ```bash
-ng serve --port 4300
+npm test
 ```
 
-### Dependencies Issues
-Clear npm cache and reinstall:
+Test files are placed alongside their components by convention.
+
+## Building for Production
+
 ```bash
-npm cache clean --force
-rm -rf node_modules package-lock.json
-npm install
+npm run build
 ```
 
-### Angular CLI Version Mismatch
-Update Angular CLI globally:
-```bash
-npm install -g @angular/cli@latest
-```
+The production build is output to `dist/angular-21-boilerplate/`. It includes:
 
-## License
+- AOT compilation
+- Output hashing for cache busting
+- Budget warnings at 500 kB (initial) / 2 kB (per component style)
+- Source maps disabled for production
+- The fake backend is **excluded** in production builds
 
-This project is open source and available under the MIT License.
+## Environment Configuration
+
+| File                            | Usage         |
+| ------------------------------- | ------------- |
+| `src/environments/environment.ts`        | Development   |
+| `src/environments/environment.prod.ts`   | Production    |
+
+The `production` flag controls whether the fake backend interceptor is registered. Set it to `true` for production deployments with a real API.
