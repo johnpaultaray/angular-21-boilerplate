@@ -1,0 +1,16 @@
+<div class="card">
+    <h4 class="card-header">Verify Email</h4>
+    <div class="card-body text-center">
+        <div *ngIf="tokenStatus === TokenStatus.Verifying">
+            <div class="spinner-border spinner-border-lg text-primary"></div>
+            <p>Verifying...</p>
+        </div>
+        <div *ngIf="tokenStatus === TokenStatus.Failed">
+            <div class="text-danger display-1 mb-3">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <p class="text-danger">Verification failed, please try again</p>
+            <a routerLink="/account/forgot-password">Forgot Password?</a>
+        </div>
+    </div>
+</div>
